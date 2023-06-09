@@ -189,7 +189,6 @@ function wireDraw(){
   for(let i = 0; i < gateArray.length; i++){
     for(let j = 0; j < gateArray[i].outputTargets.length; j++){
       if(gateArray[i].outputTargets[j] != null){
-        //console.log('와이어그림어쩌구')
         
         let handgate = gateArray[i];
         let targetgate = gateArray[i].outputTargets[j].targetGate;
@@ -200,8 +199,6 @@ function wireDraw(){
         let temp1 = rotate2d(outputPos[j][0],outputPos[j][1],handgate.direction*Math.PI/2);
         
         let temp2 = rotate2d(inputPos[handgate.outputTargets[j].inputIndex][0],inputPos[handgate.outputTargets[j].inputIndex][1],targetgate.direction*Math.PI/2);
-        
-        //console.log(temp2)
         
         let startPos = {
           x : (temp1[0] + 0.5),
@@ -274,7 +271,6 @@ function logicCalc(){
       continue;
     }
     
-    //console.log(1)
     temp.output = GATE[temp.function].calc(temp);
     
   }
@@ -283,12 +279,36 @@ function logicCalc(){
 
 function logicStep(){
   for(let i = 0; i < gateArray.length; i++){
+    if(gateArray[i].function=='CROSS')continue;
     for(let j = 0; j < GATE[gateArray[i].function].output; j++){
       let temp = gateArray[i].outputTargets[j];
       
       if(temp == null || temp == undefined) continue;
       temp.targetGate.input[temp.inputIndex] = gateArray[i].output[j];
       
+      if(temp.targetGate.function=='CROSS')
+      {
+        let stack=[temp.targetGate];
+        
+        while(stack.length>0)
+        {
+          let gate=stack.pop();
+          if(gate.function=='CROSS')
+          {
+            gate.output=GATE[gate.function].calc(gate);
+          }
+          for(let k=0; k < GATE[gate.function].output; k++)
+          {
+            let temp2 = gate.outputTargets[k];
+            
+            if(temp2 == null || temp2 == undefined) continue;
+            
+            temp2.targetGate.input[temp2.inputIndex] = gate.output[k];
+            
+            if(temp2.targetGate.function=='CROSS')stack.push(temp2.targetGate);
+          }
+        }
+      }
     }
   }
 }
@@ -303,11 +323,6 @@ function connect(A, outputIndex, B, inputIndex){
     inputIndex : inputIndex,
     targetGateId : B.gateID
   }
-  
-  console.log('handgate : ' , A);
-  console.log('targetgate : ' , B);
-  
-  //console.log('연결완료');
 }
 
 
@@ -319,14 +334,8 @@ function disconnect(A, outputIndex){
   temp.targetGate.isConnect[temp.inputIndex] = 0;
   temp.targetGate.input[temp.inputIndex] = null;
   
-  console.log(A);
-  console.log(temp.targetGate);
   A.outputTargets[outputIndex] = null;
 }
-
-//console.log('sans :' ,GATE[0])
-
-//console.log(gateArray)
 
 const event = setInterval(function(){
   try{

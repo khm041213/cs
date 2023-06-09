@@ -60,7 +60,6 @@ const GATELIST = {
     let pos2 = [pos[0] - windowpos[0], pos[1] - windowpos[1]];
     
     if(pos2[0] < 0 || pos2[0] > GATELIST.width || pos2[1] < 0|| pos2[1] > GATELIST.height){
-      //console.log('false');
       return false;
     }
     
@@ -74,9 +73,7 @@ const GATELIST = {
     }
     
     GATELIST.selectnum = (GATELIST.selectnum+length) % length;
-    //console.log(GATELIST.selectnum);
     
-    //console.log('true');
     return true;
   },
   

@@ -4,10 +4,8 @@ const SAVE = {
       if(k=='targetGate')return undefined;
       return v;
     });
-    //console.log(temp);
     navigator.clipboard.writeText(temp)
     
-    console.log('sans')
     alert('copied on clipboard!');
     
     let $textarea = document.createElement("textarea");
@@ -111,7 +109,6 @@ const LOAD = {
     
     idnum = temp+1;
     
-    console.log(loaddata)
     gateArray = loaddata;
     
   },
@@ -156,7 +153,11 @@ const LOAD = {
     
     if (relapos[0] < 0 || relapos[0] > LOAD.size || relapos[1] < 0 || relapos[1] > LOAD.size) return false;
     
-    LOAD.execute();
+    try{
+      LOAD.execute();
+    } catch (e) {
+      alert('데이터 파싱 에러\n\n'+e);
+    }
     return true;
   }
 }

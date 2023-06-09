@@ -6,6 +6,46 @@ var lastGridPos = {
 var handgate, targetgate;
 var menuTimeoutId;
 
+function initTouchEvents()
+{
+  touchStartEvents=
+  [
+    function(grid)
+    {
+      var c=gridToCanvas(...grid);
+      if(c[0]<0||c[1]<0||c[0]>canvas.width||c[1]>canvas.height)
+      return true;
+      return false;
+    },
+    MENU.onclick,
+    GATELIST.onclick,
+    SAVE.onclick,
+    LOAD.onclick,
+    ZOOM.in_onclick,
+    ZOOM.out_onclick,
+    gateGrabEvent,
+    MENU.close,
+    menuTimeoutEvent
+  ];
+  touchMoveEvents=
+  [
+    ()=>MENU.isShow,
+    clearMenuTimeoutEvent,
+    function(grid)
+    {
+      lastGridPos={x:grid[0],y:grid[1]};
+    },
+    gridMoveEvent
+  ],
+  touchEndEvents=
+  [
+    ()=>MENU.isShow,
+    clearMenuTimeoutEvent,
+    gateReleaseEvent,
+    addGateEvent
+  ];
+}
+
 function touchToCanvasPos(touch)
 {
   let domRect = document.getElementById('canvas').getBoundingClientRect();
@@ -67,7 +107,6 @@ function gateReleaseEvent(grid,touch)
       
       else if(handgate.gateID == targetgate.gateID && GATE[handgate.function].onclick!==undefined){
         GATE[handgate.function].onclick(handgate);
-        console.log(handgate)
       } //onclick 함수 실행
       
       else if(targetgate != null && handgate.geteID != targetgate.gateID){
@@ -80,9 +119,6 @@ function gateReleaseEvent(grid,touch)
               
               if(targetgate.isConnect[j] == 0){
                 
-                console.log('연결가능상태');
-                
-                
                 connect(handgate, i, targetgate, j)
                 
                 break;
@@ -94,18 +130,15 @@ function gateReleaseEvent(grid,touch)
             
             for(let j = 0; j < handgate.outputTargets.length; j++)
             disconnect(handgate, j)
-            console.log('disconnect')
             
           }
           else {
-            console.log("handgate's output is full!")
-            console.log(handgate)
+            
           }
         }
       }
     }
     else{
-      console.log("targetgate is null!");
       let outputlength = GATE[handgate.function].output;
       
       if(outputlength == 1 && handgate.outputTargets != null){
@@ -123,49 +156,15 @@ function addGateEvent(grid,touch)
 {
   if(!touch.isMove){
     GATELIST.place(grid)
-    console.log('placed')
     return true;
   }
   return false;
 }
 
 var touchMap=new Map();
-var touchStartEvents=
-[
-  function(grid)
-  {
-    var c=gridToCanvas(...grid);
-    if(c[0]<0||c[1]<0||c[0]>canvas.width||c[1]>canvas.height)
-    return true;
-    return false;
-  },
-  MENU.onclick,
-  GATELIST.onclick,
-  SAVE.onclick,
-  LOAD.onclick,
-  ZOOM.in_onclick,
-  ZOOM.out_onclick,
-  gateGrabEvent,
-  MENU.close,
-  menuTimeoutEvent
-];
-var touchMoveEvents=
-[
-  ()=>MENU.isShow,
-  clearMenuTimeoutEvent,
-  function(grid)
-  {
-    lastGridPos={x:grid[0],y:grid[1]};
-  },
-  gridMoveEvent
-];
-var touchEndEvents=
-[
-  ()=>MENU.isShow,
-  clearMenuTimeoutEvent,
-  gateReleaseEvent,
-  addGateEvent
-];
+var touchStartEvents=[];
+var touchMoveEvents=[];
+var touchEndEvents=[];
 
 function touchstart(touch)
 {
@@ -218,8 +217,61 @@ function touchend(touch)
   }
 }
 
-window.ontouchstart = function(e){
+window.onmousedown=function(e)
+{
+  let t = e;
+  let id = '<MOUSE>';
   
+  if(!touchMap.has(id))
+  {
+    touchMap.set(id,
+    {
+      isEventReturn: false,
+      isMove: false,
+      pos: touchToCanvasPos(t),
+      prevPos: touchToCanvasPos(t)
+    });
+  
+    touchstart(touchMap.get(id));
+  }
+};
+
+window.onmousemove=function(e)
+{
+  let t=e;
+  let id='<MOUSE>';
+  
+  if(touchMap.has(id))
+  {
+    let touch=touchMap.get(id);
+    touch.prevPos=touch.pos;
+    touch.pos=touchToCanvasPos(t);
+    touch.isMove=true;
+    
+    touchmove(touch);
+  }
+  
+  if(isOnGate)isGrabWire = true;
+};
+
+window.onmouseup=function(e)
+{
+  let t=e;
+  let id='<MOUSE>';
+  
+  if(touchMap.has(id))
+  {
+    let touch=touchMap.get(id);
+    
+    touchend(touch);
+    touchMap.delete(id);
+  }
+  
+  isGrabWire = false;
+};
+
+window.ontouchstart = function(e){
+  e.preventDefault();
   for(let i=0;i<e.touches.length;i++)
   {
     let t=e.touches[i];
@@ -241,7 +293,7 @@ window.ontouchstart = function(e){
 }
 
 window.ontouchmove = function(e){
-  
+  e.preventDefault();
   for(let i=0;i<e.targetTouches.length;i++)
   {
     let t=e.targetTouches[i];
@@ -258,19 +310,11 @@ window.ontouchmove = function(e){
     }
   }
   
-  
-  
-  if(!isOnGate){
-    
-  }
-  else {
-    isGrabWire = true;
-  }
-  
+  if(isOnGate)isGrabWire = true;
 }
 
 window.ontouchend = function(e){
-  
+  e.preventDefault();
   for(let i=0;i<e.changedTouches.length;i++)
   {
     let t=e.changedTouches[i];
@@ -289,3 +333,5 @@ window.ontouchend = function(e){
 }
 
 window.onselectstart=()=>false;
+
+window.addEventListener('load',initTouchEvents);
