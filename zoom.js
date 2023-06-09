@@ -1,10 +1,10 @@
 const ZOOM = {
   in : function(){
-    camera.zoom *= 1.1
+    camera.zoom *= 1.1;
   },
   
   out : function(){
-    camera.zoom *= 0.9
+    camera.zoom *= 0.9;
   },
   
   size : 40,
@@ -18,7 +18,7 @@ const ZOOM = {
     ctx.translate(ZOOM.padding, ZOOM.padding + saveloadheight);
     ctx.scale(ZOOM.size, ZOOM.size);
   
-    ctx.lineWidth = 2 / ZOOM.size
+    ctx.lineWidth = 2 / ZOOM.size;
     ctx.fillStyle = "#fff";
     ctx.strokeStyle = '#000';
   
@@ -45,7 +45,7 @@ const ZOOM = {
     ctx.translate(ZOOM.padding, ZOOM.padding *2 + saveloadheight + ZOOM.size);
     ctx.scale(ZOOM.size, ZOOM.size);
     
-    ctx.lineWidth = 2 / ZOOM.size
+    ctx.lineWidth = 2 / ZOOM.size;
     ctx.fillStyle = "#fff";
     ctx.strokeStyle = '#000';
     
@@ -75,8 +75,6 @@ const ZOOM = {
     let relapos = [pos[0] - ZOOM.padding, pos[1] - ZOOM.padding - offset];
   
     if (relapos[0] < 0 || relapos[0] > ZOOM.size || relapos[1] < 0 || relapos[1] > ZOOM.size) return false;
-    
-    console.log('sans')
 
     ZOOM.in();
     return true;
@@ -90,8 +88,6 @@ const ZOOM = {
     let relapos = [pos[0] - ZOOM.padding, pos[1] - ZOOM.padding - offset];
   
     if (relapos[0] < 0 || relapos[0] > ZOOM.size || relapos[1] < 0 || relapos[1] > ZOOM.size) return false;
-    
-    console.log('sans')
 
     ZOOM.out();
     return true;
