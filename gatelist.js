@@ -29,7 +29,7 @@ const GATELIST = {
     
     ctx.lineWidth = 1;
     
-    let size = GATELIST.height * 4 / 5
+    let size = GATELIST.height * 4 / 5;
     
     ctx.translate(cx - size/2, cy - GATELIST.height/2 - size/2);
     ctx.scale(size, size);
@@ -45,8 +45,8 @@ const GATELIST = {
     
     ctx.fillStyle = '#000';
     ctx.textAlign = 'center';
-    ctx.font = '20px 굴림'
-    ctx.fillText(GATELIST.functionList[GATELIST.selectnum],cx,cy - GATELIST.height * 7/6)
+    ctx.font = '20px 굴림';
+    ctx.fillText(GATELIST.functionList[GATELIST.selectnum],cx,cy - GATELIST.height * 7/6);
   },
   
   onclick : function(touch){
@@ -63,7 +63,7 @@ const GATELIST = {
       return false;
     }
     
-    let length = GATELIST.functionList.length
+    let length = GATELIST.functionList.length;
     
     if(pos2[0] < GATELIST.width/3){
       GATELIST.selectnum -= 1;
@@ -80,7 +80,7 @@ const GATELIST = {
   place : function(touch){
     let pos = [Math.floor(touch[0]), Math.floor(touch[1])];
     
-    addGate(GATELIST.functionList[GATELIST.selectnum], ...pos)
+    addGate(GATELIST.functionList[GATELIST.selectnum], ...pos);
   }
   
 }

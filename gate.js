@@ -7,7 +7,7 @@ const GATE = {
     outputPos : [[0, 0]],
     
     image : function(self){
-      ctx.strokeStyle = "#000"
+      ctx.strokeStyle = "#000";
       ctx.beginPath();
       
       ctx.moveTo(0.9, 0.9);
@@ -18,7 +18,7 @@ const GATE = {
       
       if(self.output[0] == 1){
         ctx.fillStyle = "#0f0";
-        ctx.fillRect(0.1,0.1,0.8,0.8)
+        ctx.fillRect(0.1,0.1,0.8,0.8);
         
       }
     },
@@ -36,7 +36,7 @@ const GATE = {
     outputPos : [[0, -0.4],[-0.4, 0],[0.4, 0]],
     
     image : function(self){
-      ctx.strokeStyle = "#000"
+      ctx.strokeStyle = "#000";
       ctx.beginPath();
       
       ctx.moveTo(0.1,0.7);
@@ -52,7 +52,7 @@ const GATE = {
     },
     
     calc : function(self){
-      return [self.input[0], self.input[0], self.input[0]]
+      return [self.input[0], self.input[0], self.input[0]];
     },
     
     menu:
@@ -65,10 +65,10 @@ const GATE = {
         },
         getColor : function(self){
           if(self.outputTargets[0]==null){
-            return '#aaa'
+            return '#aaa';
           }
           else{
-            return '#000'
+            return '#000';
           }
         }
       },
@@ -80,10 +80,10 @@ const GATE = {
         },
         getColor: function(self) {
           if (self.outputTargets[1] == null) {
-            return '#aaa'
+            return '#aaa';
           }
           else {
-            return '#000'
+            return '#000';
           }
         }
       },
@@ -95,10 +95,10 @@ const GATE = {
         },
         getColor: function(self) {
           if (self.outputTargets[2] == null) {
-            return '#aaa'
+            return '#aaa';
           }
           else {
-            return '#000'
+            return '#000';
           }
         }
       }
@@ -182,7 +182,7 @@ const GATE = {
     },
     
     calc : function(self){
-      return [self.input[0]|self.input[1]]
+      return [self.input[0]|self.input[1]];
     }
   },
     
@@ -208,7 +208,7 @@ const GATE = {
     },
     
     calc : function(self){
-      return [+!self.input[0]]
+      return [+!self.input[0]];
     }
   },
   
@@ -234,7 +234,7 @@ const GATE = {
     },
     
     calc : function(self){
-      return [+!(self.input[0]&self.input[1])]
+      return [+!(self.input[0]&self.input[1])];
     }
   },
   
@@ -264,7 +264,7 @@ const GATE = {
     },
   
     calc: function(self) {
-      return [+!(self.input[0] | self.input[1])]
+      return [+!(self.input[0] | self.input[1])];
     }
   },
   
@@ -294,7 +294,7 @@ const GATE = {
     },
   
     calc: function(self) {
-      return [self.input[0]^self.input[1]]
+      return [self.input[0]^self.input[1]];
     }
   },
   
@@ -328,7 +328,7 @@ const GATE = {
     },
   
     calc: function(self) {
-      return [+!(self.input[0] ^ self.input[1])]
+      return [+!(self.input[0] ^ self.input[1])];
     }
   }
   

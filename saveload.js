@@ -4,7 +4,7 @@ const SAVE = {
       if(k=='targetGate')return undefined;
       return v;
     });
-    navigator.clipboard.writeText(temp)
+    navigator.clipboard.writeText(temp);
     
     alert('copied on clipboard!');
     
@@ -84,7 +84,7 @@ const LOAD = {
     
     for(let i = 0; i < loaddata.length; i++){
       
-      let temp = loaddata[i]
+      let temp = loaddata[i];
       
         for(let j = 0; j < temp.outputTargets.length; j++){
           
