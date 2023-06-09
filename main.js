@@ -1,10 +1,8 @@
 var ctx = canvas.getContext("2d");
-var w = 1600/1.2;
-var h = 900/1.2;
+var w = window.innerWidth;
+var h = window.innerHeight;
 canvas.width=w;
 canvas.height=h;
-
-var linewidth = 100;
 
 var camera = {
   x : 0,
@@ -15,7 +13,6 @@ var camera = {
 const FPS = 60;
 
 var gateArray=[];
-var selectedGate;
 
 var idnum = 0;
 var isOnGate = 0;
@@ -30,17 +27,17 @@ function canvasToGrid(x, y) {
 }
 
 function gridToCanvas(x, y) {
-  let p = (x - camera.x) * camera.zoom + canvas.width / 2
-  let q = (y - camera.y) * camera.zoom + canvas.height / 2
+  let p = (x - camera.x) * camera.zoom + canvas.width / 2;
+  let q = (y - camera.y) * camera.zoom + canvas.height / 2;
 
   return [p, q];
 }
 
 function rotate2d(x, y, a) {
-  let dis = Math.sqrt((x) ** 2 + (y) ** 2)
-  let theta1 = Math.atan2(y, x)
-  let theta2 = a + theta1
-  return [dis * Math.cos(theta2), dis * Math.sin(theta2)]
+  let dis = Math.sqrt((x) ** 2 + (y) ** 2);
+  let theta1 = Math.atan2(y, x);
+  let theta2 = a + theta1;
+  return [dis * Math.cos(theta2), dis * Math.sin(theta2)];
 }
 
 function addGate(selectedGate, px, py){
@@ -58,9 +55,9 @@ function addGate(selectedGate, px, py){
     
     output : [],
     outputTargets : []
-  }
+  };
   
-  let s = GATE[temp.function]
+  let s = GATE[temp.function];
   if(s == undefined) throw('this function is not defined!')
   else {
     for(let i = 0; i < s.input; i++){
@@ -85,174 +82,15 @@ function addGate(selectedGate, px, py){
 }
 
 function distance(x1, y1, x2, y2) {
-  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
-
-
-
-
-
-
-
-function gridDraw(){ //Grid를 그리는 함수
-
-  let cx = ( -camera.x % 1 ) * camera.zoom;
-  let cy = ( -camera.y % 1 ) * camera.zoom;
-  
-  ctx.beginPath();
-  ctx.strokeStyle = '#777';
-  
-  for(let x = 0; x < canvas.width/2 + camera.zoom; x += camera.zoom){
-    
-    let lineX = x + cx + canvas.width / 2;
-    
-    ctx.moveTo(lineX, 0);
-    ctx.lineTo(lineX, canvas.height);
-    
-  }
-  
-  for(let x = -camera.zoom; x > -canvas.width/2 - camera.zoom; x -= camera.zoom){
-    
-    let lineX = x + cx + canvas.width / 2;
-    
-    ctx.moveTo(lineX, 0);
-    ctx.lineTo(lineX, canvas.height);
-    
-  }
-  
-  for(let y = 0; y < canvas.height/2 + camera.zoom + camera.zoom; y += camera.zoom){
-    
-    let lineY = y + cy + canvas.height / 2;
-    
-    ctx.moveTo(0, lineY);
-    ctx.lineTo(canvas.width, lineY);
-    
-  }
-  
-  for(let y = -camera.zoom; y > -canvas.height/2 - camera.zoom; y -= camera.zoom){
-    
-    let lineY = y + cy + canvas.height / 2;
-    
-    ctx.moveTo(0, lineY);
-    ctx.lineTo(canvas.width, lineY);
-    
-  }
-  
-  ctx.stroke();
-  
-} //그리드를 그리는 함수
-
-function gateDraw(){
-  for(let i =0; i < gateArray.length; i++){
-    let temp = gateArray[i];
-    
-    let pos = gridToCanvas(temp.x, temp.y);
-    
-    ctx.translate(pos[0], pos[1]);
-    ctx.scale(camera.zoom, camera.zoom);
-    ctx.translate(0.5 , 0.5);
-    ctx.rotate((temp.direction/2)*Math.PI);
-    ctx.translate(-0.5, -0.5)
-    
-    GATE[temp.function].image(temp);
-    
-    
-    
-    ctx.lineWidth = 4/camera.zoom;
-    ctx.stroke();
-    ctx.lineWidth = 1;
-    
-    ctx.setTransform(1,0,0,1,0,0);
-    
-  }
-}
-
-function grabWireDraw(){
-  if(isGrabWire == true){
-    
-    ctx.strokeStyle = "#000";
-    ctx.beginPath();
-    
-    let canvasPosition = gridToCanvas(handgate.x, handgate.y)
-    let handPosition = gridToCanvas(lastGridPos.x, lastGridPos.y)
-    
-    ctx.moveTo(canvasPosition[0] + camera.zoom/2, canvasPosition[1] + camera.zoom/2)
-    ctx.lineTo(handPosition[0], handPosition[1])
-    
-    ctx.lineWidth = 4;
-    ctx.stroke();
-    ctx.lineWidth = 1;
-  }
-}
-
-function wireDraw(){
-  for(let i = 0; i < gateArray.length; i++){
-    for(let j = 0; j < gateArray[i].outputTargets.length; j++){
-      if(gateArray[i].outputTargets[j] != null){
-        
-        let handgate = gateArray[i];
-        let targetgate = gateArray[i].outputTargets[j].targetGate;
-        
-        let outputPos = GATE[handgate.function].outputPos;
-        let inputPos = GATE[targetgate.function].inputPos;
-        
-        let temp1 = rotate2d(outputPos[j][0],outputPos[j][1],handgate.direction*Math.PI/2);
-        
-        let temp2 = rotate2d(inputPos[handgate.outputTargets[j].inputIndex][0],inputPos[handgate.outputTargets[j].inputIndex][1],targetgate.direction*Math.PI/2);
-        
-        let startPos = {
-          x : (temp1[0] + 0.5),
-          y : (temp1[1] + 0.5)
-        }
-        
-        let endPos = {
-          x : (temp2[0] + 0.5),
-          y : (temp2[1] + 0.5)
-        }
-        
-        
-        let temp3 = gridToCanvas(startPos.x + handgate.x, startPos.y + handgate.y);
-        let temp4 = gridToCanvas(endPos.x + targetgate.x, endPos.y + targetgate.y);
-        
-        if(handgate.output[j] == 0 || handgate.output[j] == null)
-        ctx.strokeStyle = '#000'
-        else if(handgate.output[j] == 1)
-        ctx.strokeStyle = "#0f0"
-        
-        ctx.beginPath();
-        
-        ctx.moveTo(...temp3);
-        ctx.lineTo(...temp4);
-        
-        ctx.lineWidth = 4;
-        ctx.stroke();
-        ctx.lineWidth = 1;
-      }
-    }
-  }
-}
-
-function draw(){ //그리는 함수 모음
-  //gateArray.forEach(x=>x.direction=Date.now()/1000%(Math.PI*2));
-  gridDraw();
-  wireDraw();
-  gateDraw();
-  grabWireDraw();
-  
-  MENU.draw();
-  GATELIST.draw();
-  SAVE.draw();
-  LOAD.draw();
-  ZOOM.draw();
-  
-} 
 
 
 function logicCalc(){
   for(let i = 0; i < gateArray.length; i++){
     let temp = gateArray[i];
     
-    let isNull = 0;
+    //let isNull = 0;
     
     if(GATE[temp.function].calc == undefined) continue;
     
@@ -264,12 +102,12 @@ function logicCalc(){
         temp.input[j] = 0;
       }
     }
-    if(isNull){
+    /*if(isNull){
       for(let j = 0; j < GATE[temp.function].output; j++){
         temp.output[j] = null;
       }
       continue;
-    }
+    }*/
     
     temp.output = GATE[temp.function].calc(temp);
     
@@ -322,13 +160,13 @@ function connect(A, outputIndex, B, inputIndex){
     targetGate : B,
     inputIndex : inputIndex,
     targetGateId : B.gateID
-  }
+  };
 }
 
 
 function disconnect(A, outputIndex){
   
-  let temp = A.outputTargets[outputIndex]
+  let temp = A.outputTargets[outputIndex];
   
   if(temp==null) return false;
   temp.targetGate.isConnect[temp.inputIndex] = 0;
@@ -353,4 +191,10 @@ const event = setInterval(function(){
     clearInterval(event);
     alert(e.stack);
   }
-}, 1000 / FPS)
+}, 1000 / FPS);
+
+window.onresize=function()
+{
+  canavs.width=w = window.innerWidth;
+  canvas.height=h = window.innerHeight;
+};

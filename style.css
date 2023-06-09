@@ -2,4 +2,5 @@ body {
     font-size: 15pt;
     overscroll-behavior: contain;
     overflow: hidden;
+    margin:0px;
 }

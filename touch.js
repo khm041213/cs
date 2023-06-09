@@ -50,7 +50,7 @@ function touchToCanvasPos(touch)
 {
   let domRect = document.getElementById('canvas').getBoundingClientRect();
   let position = [((touch.clientX - domRect.left)/(domRect.width)) * canvas.width,
-    ((touch.clientY - domRect.top)/(domRect.height)) * canvas.height]
+    ((touch.clientY - domRect.top)/(domRect.height)) * canvas.height];
   return position;
 }
 
@@ -101,15 +101,16 @@ function gateReleaseEvent(grid,touch)
     
     if(targetgate != null){
     
-      if(handgate.gateID == targetgate.gateID && handgate.function != "SWITCH"){
-        handgate.direction = (handgate.direction + 1) % 4
-      } //게이트 회전
-      
-      else if(handgate.gateID == targetgate.gateID && GATE[handgate.function].onclick!==undefined){
-        GATE[handgate.function].onclick(handgate);
-      } //onclick 함수 실행
-      
-      else if(targetgate != null && handgate.geteID != targetgate.gateID){
+      if(handgate.gateID == targetgate.gateID)
+      {
+        if(GATE[handgate.function].onclick!==undefined){
+          GATE[handgate.function].onclick(handgate);
+        } //onclick 함수 실행
+        else{
+          handgate.direction = (handgate.direction + 1) % 4;
+        } //게이트 회전
+      }
+      else if(targetgate != null){
         
         for(let i = 0; i < handgate.outputTargets.length; i++){
           
@@ -119,7 +120,7 @@ function gateReleaseEvent(grid,touch)
               
               if(targetgate.isConnect[j] == 0){
                 
-                connect(handgate, i, targetgate, j)
+                connect(handgate, i, targetgate, j);
                 
                 break;
               }
@@ -129,10 +130,7 @@ function gateReleaseEvent(grid,touch)
           else if(handgate.outputTargets[i].targetGate != targetgate && handgate.outputTargets.filter(x=>x!==null).length == GATE[handgate.function].output){
             
             for(let j = 0; j < handgate.outputTargets.length; j++)
-            disconnect(handgate, j)
-            
-          }
-          else {
+            disconnect(handgate, j);
             
           }
         }
@@ -142,7 +140,7 @@ function gateReleaseEvent(grid,touch)
       let outputlength = GATE[handgate.function].output;
       
       if(outputlength == 1 && handgate.outputTargets != null){
-        disconnect(handgate, 0)
+        disconnect(handgate, 0);
       }
       
       
@@ -155,7 +153,7 @@ function gateReleaseEvent(grid,touch)
 function addGateEvent(grid,touch)
 {
   if(!touch.isMove){
-    GATELIST.place(grid)
+    GATELIST.place(grid);
     return true;
   }
   return false;
@@ -217,11 +215,8 @@ function touchend(touch)
   }
 }
 
-window.onmousedown=function(e)
+function touchmapstart(t,id)
 {
-  let t = e;
-  let id = '<MOUSE>';
-  
   if(!touchMap.has(id))
   {
     touchMap.set(id,
@@ -234,13 +229,10 @@ window.onmousedown=function(e)
   
     touchstart(touchMap.get(id));
   }
-};
+}
 
-window.onmousemove=function(e)
+function touchmapmove(t,id)
 {
-  let t=e;
-  let id='<MOUSE>';
-  
   if(touchMap.has(id))
   {
     let touch=touchMap.get(id);
@@ -250,6 +242,33 @@ window.onmousemove=function(e)
     
     touchmove(touch);
   }
+}
+
+function touchmapend(t,id)
+{
+  if(touchMap.has(id))
+  {
+    let touch=touchMap.get(id);
+    
+    touchend(touch);
+    touchMap.delete(id);
+  }
+}
+
+window.onmousedown=function(e)
+{
+  let t = e;
+  let id = '<MOUSE>';
+  
+  touchmapstart(t,id);
+};
+
+window.onmousemove=function(e)
+{
+  let t=e;
+  let id='<MOUSE>';
+  
+  touchmapmove(t,id);
   
   if(isOnGate)isGrabWire = true;
 };
@@ -259,13 +278,7 @@ window.onmouseup=function(e)
   let t=e;
   let id='<MOUSE>';
   
-  if(touchMap.has(id))
-  {
-    let touch=touchMap.get(id);
-    
-    touchend(touch);
-    touchMap.delete(id);
-  }
+  touchmapend(t,id);
   
   isGrabWire = false;
 };
@@ -277,20 +290,9 @@ window.ontouchstart = function(e){
     let t=e.touches[i];
     let id=t.identifier;
     
-    if(!touchMap.has(id))
-    {
-      touchMap.set(id,
-      {
-        isEventReturn:false,
-        isMove:false,
-        pos:touchToCanvasPos(t),
-        prevPos:touchToCanvasPos(t)
-      });
-      
-      touchstart(touchMap.get(id));
-    }
+    touchmapstart(t,id);
   }
-}
+};
 
 window.ontouchmove = function(e){
   e.preventDefault();
@@ -299,19 +301,11 @@ window.ontouchmove = function(e){
     let t=e.targetTouches[i];
     let id=t.identifier;
     
-    if(touchMap.has(id))
-    {
-      let touch=touchMap.get(id);
-      touch.prevPos=touch.pos;
-      touch.pos=touchToCanvasPos(t);
-      touch.isMove=true;
-      
-      touchmove(touch);
-    }
+    touchmapmove(t,id);
   }
   
   if(isOnGate)isGrabWire = true;
-}
+};
 
 window.ontouchend = function(e){
   e.preventDefault();
@@ -320,17 +314,11 @@ window.ontouchend = function(e){
     let t=e.changedTouches[i];
     let id=t.identifier;
     
-    if(touchMap.has(id))
-    {
-      let touch=touchMap.get(id);
-      
-      touchend(touch);
-      touchMap.delete(id);
-    }
+    touchmapend(t,id);
   }
   
   isGrabWire = false;
-}
+};
 
 window.onselectstart=()=>false;
 
